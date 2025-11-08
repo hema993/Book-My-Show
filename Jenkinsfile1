@@ -6,10 +6,7 @@ pipeline {
     }
     environment {
         SCANNER_HOME = tool 'sonar-scanner'
-        DOCKER_IMAGE = 'hema84683/bms:latest'
-        EKS_CLUSTER_NAME = 'pro-cluster'
-        AWS_REGION = 'ap-south-1'
-    }
+   }
     stages {
         stage('Clean Workspace') {
             steps {
@@ -75,31 +72,27 @@ pipeline {
                 }
             }
         }
-         stage('Deploy to EKS Cluster') {
+       stage('Deploy to Container') {
             steps {
-                script {
-                    sh '''
-                    echo "Verifying AWS credentials..."
-                    aws sts get-caller-identity
+                sh ''' 
+                echo "Stopping and removing old container..."
+                docker stop bms || true
+                docker rm bms || true
 
-                    echo "Configuring kubectl for EKS cluster..."
-                    aws eks update-kubeconfig --name $EKS_CLUSTER_NAME --region $AWS_REGION
+                echo "Running new container on port 3000..."
+                docker run -d --restart=always --name bms -p 3000:3000 ASKFORTESAWS/bms:latest
 
-                    echo "Verifying kubeconfig..."
-                    kubectl config view
+                echo "Checking running containers..."
+                docker ps -a
 
-                    echo "Deploying application to EKS..."
-                    kubectl apply -f deployment.yml
-                    kubectl apply -f service.yml
-
-                    echo "Verifying deployment..."
-                    kubectl get pods
-                    kubectl get svc
-                    '''
-                }
+                echo "Fetching logs..."
+                sleep 5  # Give time for the app to start
+                docker logs bms
+                '''
             }
         }
     }
+
     post {
         always {
             emailext attachLog: true,
