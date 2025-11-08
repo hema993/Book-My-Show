@@ -10,10 +10,10 @@ metadata:
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   rules:
-  - host: /hema   # replace with your domain OR remove host block to use path-only ingress
+  - host:     
     http:
       paths:
-      - path: /
+      - path: /hema 
         pathType: Prefix
         backend:
           service:
