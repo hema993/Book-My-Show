@@ -10,10 +10,10 @@ metadata:
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   rules:
-  - host:     
+  - host:  bms.example.com    
     http:
       paths:
-      - path: /hema 
+      - path: /
         pathType: Prefix
         backend:
           service:
