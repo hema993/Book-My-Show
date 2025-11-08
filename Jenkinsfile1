@@ -29,14 +29,8 @@ pipeline {
                 }
             }
         }
-        stage('Quality Gate') {
-            steps {
-                script {
-                    waitForQualityGate abortPipeline: false, credentialsId: 'Sonar-token'
-                }
-            }
-        }
- stage('Install Dependencies') {
+       
+      stage('Install Dependencies') {
             steps {
                 sh '''
                 cd bookmyshow-app
